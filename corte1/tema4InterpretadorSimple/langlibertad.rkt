@@ -71,7 +71,6 @@ Para la especificación léxica
     (expresion (booleano) exp-booleano)
     (expresion (texto) exp-texto)
     (expresion (primitiva "(" (separated-list expresion ",") ")") exp-primitiva)
-    (expresion (numero texto) exp-rara)
     (primitiva ("+") sum-prim)
     (primitiva ("-") minus-prim)
     (primitiva ("*") mult-prim)
@@ -101,3 +100,71 @@ Para la especificación léxica
 
 (define parser
   (sllgen:make-string-parser lexica gramatical))
+
+(define interpretador
+  (sllgen:make-rep-loop "¡LANGLIBERTAD! "
+    (lambda (pgm) (evaluar-programa pgm))
+    (sllgen:make-stream-parser 
+      lexica
+      gramatical)))
+
+;;Evaluar programa
+(define evaluar-programa
+  (lambda (p)
+    (cases programa p
+      (un-programa (e) (evaluar-expresion e ambiente-inicial)))))
+
+;;Define evaluar expresion
+(define evaluar-expresion
+  (lambda (exp amb)
+    (cases expresion exp
+      (exp-literal (id) (aplicar-ambiente amb id))
+      (exp-numero (dato) dato)
+      (exp-texto (dato) dato)
+      (exp-booleano (dato) (evaluar-booleano dato))
+      (else 0))))
+
+(define evaluar-booleano
+  (lambda (bool)
+    (cases booleano bool
+      (falso-bool () #F)
+      (verdadero-bool () #T))))
+
+;;Definición de ambiente
+(define-datatype ambiente ambiente?
+  (ambiente-vacio)
+  (ambiente-extendido
+   (lid (list-of symbol?))
+   (lv (list-of valores?))
+   (amb ambiente?)))
+
+(define valores?
+  (lambda (v) (or (number? v) (symbol? v))))
+
+(define aplicar-ambiente
+  (lambda (amb id)
+    (cases ambiente amb
+      (ambiente-vacio () (eopl:error "No se encontró la variable " id))
+      (ambiente-extendido (lid lv amb)
+                        (letrec
+                            (
+                             (buscar-id (lambda (l idd [pos 0])
+                                          (cond
+                                            [(null? l) -1]
+                                            [(eqv? (car l) idd) pos]
+                                            [else (buscar-id (cdr l) idd (+ pos 1))]))
+                                       )
+                             )
+                          (let
+                              (
+                               (pos (buscar-id lid id))
+                               )
+                            (if (= pos -1)
+                                (aplicar-ambiente amb id)
+                                (list-ref lv pos))))))))
+
+(define ambiente-inicial
+  (ambiente-extendido '(a b c) '(1 2 3)
+                      (ambiente-extendido '(x y z) '(4 5 6) (ambiente-vacio))))
+
+(interpretador)
