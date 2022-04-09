@@ -85,6 +85,8 @@ Para la especificación léxica
     (primitiva ("o-ex") oex-prim)
     (primitiva ("==>") implicacion-prim)
     (primitiva ("no") no-prim)
+    (primitiva ("**") exp-prim)
+    (primitiva ("log") log-prim)
     (booleano ("verdadero") verdadero-bool)
     (booleano ("falso") falso-bool)))
 
@@ -149,6 +151,8 @@ Para la especificación léxica
       (oex-prim () (if (eqv? (car lista) (cadr lista)) #F #T))
       (implicacion-prim () (or (not (car lista)) (cadr lista)))
       (no-prim () (not (car lista)))
+      (exp-prim () (expt (car lista) (cadr lista)))
+      (log-prim () (log (car lista) (cadr lista)))
       (else 0))))
 
 
