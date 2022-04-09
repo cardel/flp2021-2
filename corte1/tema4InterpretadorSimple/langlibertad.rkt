@@ -71,7 +71,7 @@ Para la especificación léxica
     (expresion (booleano) exp-booleano)
     (expresion (texto) exp-texto)
     (expresion (primitiva "(" (separated-list expresion ",") ")") exp-primitiva)
-    ;(expresion (numero texto) exp-rara)
+    (expresion (numero texto) exp-rara)
     (primitiva ("+") sum-prim)
     (primitiva ("-") minus-prim)
     (primitiva ("*") mult-prim)
@@ -93,10 +93,11 @@ Para la especificación léxica
 
 (sllgen:make-define-datatypes lexica gramatical)
 
-(define show-the-datatypes
+(define mostrar-tipoDeDatos
   (lambda () (sllgen:list-define-datatypes lexica gramatical)))
 
 (define escanear
     (sllgen:make-string-scanner lexica gramatical))
 
-    
+(define parser
+  (sllgen:make-string-parser lexica gramatical))
