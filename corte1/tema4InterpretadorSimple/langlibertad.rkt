@@ -122,7 +122,15 @@ Para la especificación léxica
       (exp-numero (dato) dato)
       (exp-texto (dato) dato)
       (exp-booleano (dato) (evaluar-booleano dato))
-      (else 0))))
+      (exp-primitiva (prim lexp)
+                     (let
+                         (
+                          (lista (map (lambda (x) (evaluar-expresion x amb)) lexp))
+                          )
+                       (aplicar-primitiva prim lista)
+                         )
+                     )
+      )))
 
 (define evaluar-booleano
   (lambda (bool)
