@@ -132,6 +132,33 @@ Para la especificación léxica
                      )
       )))
 
+(define aplicar-primitiva
+  (lambda (prim lista)
+    (cases primitiva prim
+      (sum-prim () (operar lista + 0))
+      (minus-prim () (operar lista - 0))
+      (mult-prim () (operar lista * 1))
+      (div-prim () (operar lista / 1))
+      (mod-prim () (modulo (car lista) (cadr lista)))
+      (mayor-igual-prim () (>= (car lista) (cadr lista)))
+      (mayor-prim () (> (car lista) (cadr lista)))
+      (menor-igual-prim () (<= (car lista) (cadr lista)))
+      (menor-prim () (< (car lista) (cadr lista)))
+      (y-prim () (operar lista (lambda (x y) (and x y)) #T))
+      (o-prim () (operar lista (lambda (x y) (or x y)) #F))
+      (oex-prim () (if (eqv? (car lista) (cadr lista)) #F #T))
+      (implicacion-prim () (or (not (car lista)) (cadr lista)))
+      (no-prim () (not (car lista)))
+      (else 0))))
+
+
+(define operar
+  (lambda (lst f acc [res acc])
+    (cond
+      [(null? lst) res]
+      [else
+       (operar (cdr lst) f acc (f res (car lst)))])))
+
 (define evaluar-booleano
   (lambda (bool)
     (cases booleano bool
